@@ -1,0 +1,10 @@
+---
+- hosts: unicorn_server
+  sudo: true
+
+  roles:
+    - common
+    - git
+    - unicorn
+    - nginx
+

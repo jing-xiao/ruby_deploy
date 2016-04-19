@@ -1,0 +1,23 @@
+- name: create user deploy
+  user: name={{ app_user }} shell=/bin/bash groups=www-data append=yes
+  
+- name: create gem directory
+  action: file group={{app_user}} owner={{app_user}} path=/home/{{app_user}}/.gem state=directory
+
+- name: create public directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}} state=directory
+  
+- name: create public directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}}/public state=directory
+
+- name: create config directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}}/config state=directory
+
+- name: create shared directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}}/shared state=directory
+  
+- name: create log directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}}/log state=directory
+  
+- name: create pid directory
+  action: file group={{ app_user }} owner={{ app_user }} path=/var/www/{{app_name}}/pid state=directory

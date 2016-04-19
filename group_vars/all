@@ -1,0 +1,15 @@
+key_name: mykey
+aws_region: ap-southeast-2
+ami_id: ami-6c14310f
+instance_type: t2.micro
+vpc_id: vpc-c10e4da4
+vpc_subnet_id: subnet-47d8ee22
+ansible_ssh_private_key_file: /home/jing/.ssh/mykey.pem
+ansible_ssh_user: ubuntu
+git_repo_url: https://github.com/tnh/simple-sinatra-app
+git_repo_branch: master
+app_name: testapp
+app_domain: testapp.dev
+unicorn_port: 8080
+app_user: deploy
+my_ip_range: 10.0.0.0/8

@@ -1,0 +1,52 @@
+---
+- name: ensure ruby is installed
+  apt: pkg={{ item }} state=latest update_cache=yes
+  with_items:
+    - ruby2.0
+    - ruby2.0-dev
+    - curl
+    - build-essential
+
+- name: Symlink exists for Ruby 2.0
+  file: src=/usr/bin/ruby2.0 dest=/usr/local/bin/ruby state=link
+
+- name: Symlink exists for Ruby Gems 2.0
+  file: src=/usr/bin/gem2.0 dest=/usr/local/bin/gem state=link
+
+- name: Update gems
+  shell: /usr/local/bin/gem update --system
+  args:
+    executable: /bin/bash
+  sudo: yes
+
+- name: install unicorn
+#  gem: name=unicorn state=latest include_dependencies=yes executable=/usr/local/bin/gem
+  shell: gem install kgio raindrops unicorn bundler
+  args:
+    chdir: /var/www/{{app_name}}/public
+    executable: /bin/bash
+  sudo: yes
+#  sudo_user: "{{app_user}}"
+  
+- name: install bundler
+  gem: name=bundler state=latest include_dependencies=yes executable=/usr/local/bin/gem
+  sudo: yes
+#  sudo_user: "{{app_user}}"
+  
+- name: bundle install
+  shell: bundle install --path ~/.gem
+  args:
+    chdir: /var/www/{{app_name}}/public
+    executable: /bin/bash
+  sudo: yes
+  sudo_user: "{{ app_user }}"
+  
+- name: copy unicorn configuration file
+  template: src=unicorn.rb dest=/var/www/{{app_name}}/public/unicorn.rb owner={{ app_user }} group={{ app_user }}
+  
+- name: copy unicorn script file
+  template: src=unicorn.sh dest=/etc/init.d/unicorn_{{app_name}} owner=root group=root mode=0750
+  
+- name: start unicorn
+  sudo: true
+  shell: service unicorn_{{app_name}} start

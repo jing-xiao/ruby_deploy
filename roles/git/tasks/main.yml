@@ -1,0 +1,9 @@
+---
+- name: ensure git is installed
+  apt: pkg=git-core state=latest update_cache=yes
+
+- name: ensure local git repo is updated
+  git: repo={{ git_repo_url }} dest=/var/www/{{ app_name }}/public version={{ git_repo_branch }} accept_hostkey=yes
+  sudo: yes
+  sudo_user: "{{ app_user }}"
+  register: repo_status

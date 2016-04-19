@@ -1,0 +1,40 @@
+---
+# Create instance with security group
+- name: Create instance and with security group
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+  - name: Set security group
+    ec2_group:
+      name: sg_web_unicorn
+      description: Security Group for web server with unicorn
+      vpc_id: "{{ vpc_id }}"
+      region: "{{ aws_region }}"
+      rules:
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: {{ my_ip_range }}
+
+  - name: Create EC2 instance
+    ec2:
+      key_name: mykey
+      group: sg_web_unicorn
+      instance_type: "{{ instance_type }}"
+      image: "{{ ami_id }}"
+      region: "{{ aws_region }}"
+      vpc_subnet_id: "{{ vpc_subnet_id }}"
+      assign_public_ip: yes
+      wait: yes
+      wait_timeout: 300
+    register: ec2
+
+  - name: Add new instance to host
+    add_host: hostname={{ item.public_ip }} groupname=unicorn_server
+    with_items: ec2.instances
+

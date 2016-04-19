@@ -1,0 +1,23 @@
+---
+# file: roles/nginx/tasks/main.yml
+
+- name: install nginx
+  apt: pkg=nginx state=latest update_cache=yes
+
+#- name: copy nginx logrotate script
+#  template: src=logrotate.d.nginx dest=/etc/logrotate.d/nginx
+  
+- name: copy unicorn nginx configuration file
+  template: src=nginx_unicorn_app.conf dest=/etc/nginx/sites-available/{{app_domain}}.conf
+  
+- name: remove default config file of nginx
+  shell: rm -f /etc/nginx/sites-enabled/default
+  sudo: yes
+
+- name: add nginx in startup
+  shell: update-rc.d nginx enable
+  sudo: yes
+
+- name: link config file into enabled
+  file: src=/etc/nginx/sites-available/{{app_domain}}.conf dest=/etc/nginx/sites-enabled/{{app_domain}}.conf owner=root group=root state=link mode=0644
+  notify: reload nginx
