@@ -19,7 +19,7 @@
         - proto: tcp
           from_port: 22
           to_port: 22
-          cidr_ip: {{ my_ip_range }}
+          cidr_ip: "{{ my_ip_range }}"
 
   - name: Create EC2 instance
     ec2:
